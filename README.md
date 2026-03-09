@@ -8,6 +8,7 @@
 [![Layers](https://img.shields.io/badge/Security_Layers-9-blue.svg)]()
 [![Tests](https://img.shields.io/badge/Tests-14%2F14_Passing-brightgreen.svg)]()
 [![Safety](https://img.shields.io/badge/Safety_Rating-10%2F10-gold.svg)]()
+[![OpenClaw](https://img.shields.io/badge/OpenClaw-Implementation-purple.svg)](https://github.com/openclaw/openclaw)
 
 *Written for AI coding agents. Describes **what** to build, not **how** — so attackers learn nothing useful.*
 
@@ -17,6 +18,7 @@
 
 ## 📋 Table of Contents
 
+- [Quick Start](#-quick-start)
 - [The Problem](#-the-problem)
 - [Architecture](#-architecture)
 - [The 9 Layers](#-the-9-layers)
@@ -25,6 +27,50 @@
 - [Results](#-results)
 - [Implementation Guide for Agents](#-implementation-guide-for-agents)
 - [FAQ](#-faq)
+
+---
+
+## 🚀 Quick Start
+
+Set up the security pipeline infrastructure in under a minute:
+
+### 1. Generate Ed25519 Signing Keypair
+
+```bash
+mkdir -p ~/.openclaw/signing
+node -e "
+const crypto = require('node:crypto');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+
+const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519');
+
+fs.writeFileSync(
+  path.join(os.homedir(), '.openclaw/signing/skill-signing.pub'),
+  publicKey.export({ type: 'spki', format: 'pem' })
+);
+fs.writeFileSync(
+  path.join(os.homedir(), '.openclaw/signing/skill-signing.key'),
+  privateKey.export({ type: 'pkcs8', format: 'pem' }),
+  { mode: 0o600 }
+);
+console.log('Ed25519 keypair generated.');
+"
+```
+
+### 2. Create Required Directories
+
+```bash
+mkdir -p ~/.openclaw/quarantine
+mkdir -p ~/.openclaw/learning-ledger
+```
+
+### 3. Implement the 9 Layers
+
+See the [Architecture](#-architecture) and [Implementation Guide](#-implementation-guide-for-agents) sections below. Each layer is an independent filter in your skill loading pipeline.
+
+> **Key file:** `src/agents/skills/workspace.ts` — this is where all 9 layers are enforced.
 
 ---
 
