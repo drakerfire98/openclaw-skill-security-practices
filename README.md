@@ -225,6 +225,22 @@ If you are an AI coding agent implementing this architecture:
 
 > **The architecture is the contribution. The specific patterns, thresholds, and detection logic should remain private to your deployment.**
 
+### Security Tool Self-Identification
+
+Security skills (scanners, auditors, signers) will contain dangerous patterns in their documentation because they describe what they detect. Without special handling, your risk scorer will flag your own security tools as malicious.
+
+**Solution:** Add `security-tool: true` to the YAML frontmatter of security skills:
+
+```yaml
+---
+name: my-security-scanner
+description: 'Scans skills for dangerous patterns...'
+security-tool: true
+---
+```
+
+Your risk scorer should check for this tag and return a score of 0 for skills that declare themselves as security tools. This makes the system self-documenting — any agent cloning the repo immediately understands that these skills are safe infrastructure, not threats.
+
 ---
 
 ## ❓ FAQ
@@ -240,6 +256,9 @@ A: Each layer is independent. An attacker would need to simultaneously: not be q
 
 **Q: What about zero-day Node.js vulnerabilities?**  
 A: No userland code can protect against runtime zero-days. That's the boundary of what software security can achieve. The 9 layers cover everything within that boundary.
+
+**Q: My security scanner skills score RED — is that a bug?**  
+A: No — security tools document the patterns they detect, so they trigger their own scanner. Add `security-tool: true` to the YAML frontmatter of your security skills and have your risk scorer check for it. See [Security Tool Self-Identification](#security-tool-self-identification).
 
 ---
 
